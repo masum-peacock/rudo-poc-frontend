@@ -18,7 +18,7 @@ const ChatInterface: React.FC = () => {
         setCurrentMessage(null);
         try {
             const response = await fetch(`http://127.0.0.1:8787/chat?message=${newMessage}`, {
-                method: 'GET',
+                method: 'POST',
                 headers: {
                     'Accept': 'text/event-stream'
                 }
