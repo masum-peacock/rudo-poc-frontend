@@ -1,9 +1,8 @@
-// 'use client'
 import ChatInterface from "@/components/ui/chat-interface";
 
 export default function Home() {
   return (
-    <div className="">
+    <div className="w-full">
       <ChatInterface />
     </div>
   );
