@@ -22,6 +22,7 @@ const ChatInterface: React.FC = () => {
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [messages, setMessages] = useState<Message[]>([]);
     const [currentMessage, setCurrentMessage] = useState<Message | null>(null);
+    const [fileText, setFileText] = useState<string>('');
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const {user} = useUser();
     const handleSend = async ({ message, is_file, files }: SendMessagePayload) => {
@@ -46,12 +47,14 @@ const ChatInterface: React.FC = () => {
                         method: 'POST',
                         body: fileForm
                     });
-                    const fileText = await fileToText.text();
-                    formData = { ...formData, is_file: true, files_text: fileText };
+                    const readableText = await fileToText.text();
+                    formData = { ...formData, is_file: true, files_text: readableText };
+                    setFileText(readableText);
                 } catch (error: unknown) {
                     console.error("Error uploading file:", error);
                     setMessages((prevMessages) => [...prevMessages, { sender: "Assistant", content: { message: "File Upload Error", is_file: true } }]);
                     setIsLoading(false);
+                    setFileText('');
                 }
             }
 
@@ -110,7 +113,7 @@ const ChatInterface: React.FC = () => {
             console.log(["FORM DATA"], formData);
             const response = await fetch(`http://127.0.0.1:8787/chat`, {
                 method: 'POST',
-                body: JSON.stringify(formData),
+                body: JSON.stringify({...formData, files_text: formData.files_text || fileText}),
             });
 
             if (!response.ok) {
